@@ -1,4 +1,4 @@
-const Audio = require('../../Models/audioModel');
+const Audio = require('../models/audioModel');
 
 const updateAudio = async (req, res) => {
     try {

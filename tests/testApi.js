@@ -1,6 +1,6 @@
 // api.test.js
 const request = require('supertest');
-const app = require('../votre_app'); // Remplacez cela par le chemin correct de votre application
+const app = require('../index.js'); // Remplacez cela par le chemin correct de votre application
 
 describe('Tests unitaires pour les endpoints de l\'API', () => {
   it('Devrait tester l\'endpoint GET /api/chansons', async () => {

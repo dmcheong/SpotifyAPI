@@ -1,4 +1,4 @@
-const Audio = require('../../Models/audioModel');
+const Audio = require('../models/audioModel');
 
 const deleteAudio = async (req, res) => {
     try {
