@@ -1,4 +1,4 @@
-const Audio = require('../models/audioModel');
+const Audio = require('../../models/AudioModel');
 
 const getAllAudios = async (req, res) => {
     try {

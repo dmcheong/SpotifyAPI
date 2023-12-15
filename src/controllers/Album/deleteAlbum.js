@@ -1,5 +1,5 @@
-const Album = require('../models/albumModel');
-const { uploadToS3, deleteFromS3 } = require('./aws-functions'); // Ajoutez vos fonctions d'upload et de suppression vers AWS S3 ici
+const Album = require('../../models/AlbumModel');
+const { deleteFromS3 } = require('../../config/aws-config');
 
 // Delete - Suppression d'un album par ID
 async function deleteAlbum(req, res) {

@@ -1,4 +1,4 @@
-const Album = require('../models/albumModel');
+const Album = require('../../models/AlbumModel');
 
 // Read - Récupération d'un album par ID
 async function getAlbumById(req, res) {

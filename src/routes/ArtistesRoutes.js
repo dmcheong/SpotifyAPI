@@ -2,17 +2,17 @@ const express = require('express');
 const router = express.Router();
 
 // Importation des contrôleurs pour les artistes
-const getAllArtistes = require('./Controllers/Artiste/getAllArtistes');
-const getArtisteById = require('./Controllers/Artiste/getArtisteById');
-const createArtiste = require('./Controllers/Artiste/createArtiste');
-const updateArtiste = require('./Controllers/Artiste/updateArtiste');
-const deleteArtiste = require('./Controllers/Artiste/deleteArtiste');
+const getAllArtistes = require('../controllers/Artiste/getAllArtistes');
+const getArtisteById = require('../controllers/Artiste/getArtisteById');
+const createArtiste = require('../controllers/Artiste/createArtiste');
+const updateArtiste = require('../controllers/Artiste/updateArtiste');
+const deleteArtiste = require('../controllers/Artiste/deleteArtiste');
 
 // Routes pour les artistes
-app.get('/artistes', getAllArtistes);
-app.get('/artistes/:id', getArtisteById);
-app.post('/artistes', createArtiste);
-app.put('/artistes/:id', updateArtiste);
-app.delete('/artistes/:id', deleteArtiste);
+router.get('/artistes', getAllArtistes);
+router.get('/artistes/:id', getArtisteById);
+router.post('/artistes', createArtiste);
+router.put('/artistes/:id', updateArtiste);
+router.delete('/artistes/:id', deleteArtiste);
 
 module.exports = router;

@@ -34,4 +34,4 @@ process.on('SIGINT', () => {
   });
 });
 
-module.exports = mongooseConfig;
+module.exports = mongoose;

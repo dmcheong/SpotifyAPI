@@ -1,7 +1,7 @@
-const Audio = require('../models/audioModel');
+const Audio = require('../../models/AudioModel');
 const ffmpeg = require('fluent-ffmpeg');
 const musicMetadata = require('music-metadata');
-const { uploadToS3 } = require('./aws-functions');
+const { uploadToS3 } = require('../../config/aws-config');
 // const sharp = require('sharp');
 
 async function createAudio(req, res, next) {
@@ -84,4 +84,4 @@ async function createAudio(req, res, next) {
   }
 }
 
-module.exports = { createAudio };
+module.exports = createAudio;

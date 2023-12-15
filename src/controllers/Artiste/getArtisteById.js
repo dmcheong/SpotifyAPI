@@ -1,4 +1,4 @@
-const Artiste = require('../models/artisteModel');
+const Artiste = require('../../models/ArtisteModel');
 
 const getArtisteById = async (req, res) => {
   try {

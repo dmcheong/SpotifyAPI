@@ -1,5 +1,5 @@
-const { uploadToS3 } = require('./aws-functions');
-const Artiste = require('../models/artiste');
+const { uploadToS3 } = require('../../config/aws-config');
+const Artiste = require('../../models/ArtisteModel');
 const musicMetadata = require('music-metadata');
 const ffmpeg = require('fluent-ffmpeg');
 
@@ -75,4 +75,4 @@ async function createArtiste(req, res, next) {
   }
 }
 
-module.exports = { createArtiste };
+module.exports = createArtiste;

@@ -1,4 +1,4 @@
-const Album = require('../models/albumModel');
+const Album = require('../../models/AlbumModel');
 
 const getAllAlbums = async (req, res) => {
   try {
