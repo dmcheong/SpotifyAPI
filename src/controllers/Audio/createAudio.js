@@ -1,66 +1,87 @@
 const Audio = require('../models/audioModel');
 const ffmpeg = require('fluent-ffmpeg');
-const sharp = require('sharp');
+const musicMetadata = require('music-metadata');
+const { uploadToS3 } = require('./aws-functions');
+// const sharp = require('sharp');
 
-// Fonction pour convertir l'audio en .m4a
-async function convertAudioToM4a(audioBuffer) {
-  return new Promise((resolve, reject) => {
-    ffmpeg()
-      .input(audioBuffer)
-      .audioCodec('aac')
-      .on('end', () => resolve(Buffer.concat(chunks)))
-      .on('error', (err) => reject(err))
-      .toFormat('mp4')
-      .pipe();
-  });
-}
-
-// Fonction pour convertir l'image en plusieurs formats
-async function convertImageToMultipleFormats(imageBuffer) {
-  const formats = ['jpeg', 'png'];
-  const convertedImageBuffers = await Promise.all(
-    formats.map(async (format) => {
-      return sharp(imageBuffer)
-        .toFormat(format)
-        .toBuffer();
-    })
-  );
-
-  return convertedImageBuffers;
-}
-
-const createAudio = async (req, res) => {
+async function createAudio(req, res, next) {
   try {
-    // Récupérer les données de la requête
-    const { pochetteAlbum, titre, duree, auteur, compositeur, dateSortie, audio, albumId, artisteId } = req.body;
+    const file = req.file; // Fichier uploadé
+    const tempAudioFilePath = `chemin-temporaire/${file.originalname}.m4a`;
 
-    // Convertir l'audio en .m4a (ou wav)
-    const convertedAudioBuffer = await convertAudioToM4a(Buffer.from(audio, 'base64'));
-
-    // Convertir l'image en plusieurs formats (à utiliser en front selon les besoins)
-    const convertedImageBuffers = await convertImageToMultipleFormats(Buffer.from(pochetteAlbum, 'base64'));
-
-    // Créer une nouvelle instance de Musique avec les données converties
-    const nouvelleMusique = new Musique({
-      pochetteAlbum: convertedImageBuffers,
-      titre,
-      duree,
-      auteur,
-      compositeur,
-      dateSortie,
-      audio: convertedAudioBuffer,
-      album: albumId,
-      artiste: artisteId,
+    // Conversion en format .m4a
+    await new Promise((resolve, reject) => {
+      ffmpeg()
+        .input(file.buffer)
+        .audioCodec('aac')
+        .toFormat('m4a')
+        .on('end', resolve)
+        .on('error', reject)
+        .save(tempAudioFilePath);
     });
 
-    // Enregistrer la musique dans la base de données
-    const musiqueEnregistree = await nouvelleMusique.save();
+    // Upload du fichier audio dans S3
+    const s3AudioUrl = await uploadToS3({
+      buffer: Buffer.from(require('fs').readFileSync(tempAudioFilePath)),
+      originalname: `${file.originalname}.m4a`,
+    });
 
-    res.status(201).json(musiqueEnregistree);
+    // Suppression du fichier audio temporaire
+    require('fs').unlinkSync(tempAudioFilePath);
+
+    // Extraction des métadonnées du fichier audio converti
+    const audioMetadata = await musicMetadata.parseFile(
+      Buffer.from(require('fs').readFileSync(tempAudioFilePath))
+    );
+
+    // Upload de la couverture dans S3 si elle existe
+    if (audioMetadata.common.picture && audioMetadata.common.picture.length > 0) {
+      const coverImage = audioMetadata.common.picture[0];
+      const tempCoverFilePath = `chemin-temporaire/cover-${file.originalname}.jpg`;
+
+      // Sauvegarde de la couverture temporaire dans un fichier
+      require('fs').writeFileSync(tempCoverFilePath, coverImage.data);
+
+      // Upload de la couverture dans S3
+      const s3CoverUrl = await uploadToS3({
+        buffer: Buffer.from(require('fs').readFileSync(tempCoverFilePath)),
+        originalname: `cover-${file.originalname}.jpg`,
+      });
+
+      // Suppression du fichier de couverture temporaire
+      require('fs').unlinkSync(tempCoverFilePath);
+
+      // Enregistrement dans MongoDB avec l'URL de la couverture
+      const newAudio = new Audio({
+        titre: audioMetadata.common.title,
+        artiste: audioMetadata.common.artist,
+        album: audioMetadata.common.album,
+        duree: audioMetadata.format.duration,
+        urlAudio: s3AudioUrl,
+        urlCover: s3CoverUrl,
+        // ... autres champs
+      });
+
+      const savedAudio = await newAudio.save();
+      res.status(201).json(savedAudio);
+    } else {
+      // Si aucune couverture n'est trouvée, enregistrez sans URL de couverture
+      const newAudio = new Audio({
+        titre: audioMetadata.common.title,
+        artiste: audioMetadata.common.artist,
+        album: audioMetadata.common.album,
+        duree: audioMetadata.format.duration,
+        urlAudio: s3AudioUrl,
+        // ... autres champs
+      });
+
+      const savedAudio = await newAudio.save();
+      res.status(201).json(savedAudio);
+    }
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    console.error('Erreur lors de la création de la bande sonore : ', error);
+    res.status(500).json({ error: 'Erreur lors de la création de la bande sonore.' });
   }
-};
+}
 
-module.exports = createAudio;
+module.exports = { createAudio };
