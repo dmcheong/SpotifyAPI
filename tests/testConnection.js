@@ -1,32 +1,38 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
+const path = require('path');
 
+const caPath = path.resolve(__dirname, '../src/config/ca.pem');
 const uri = process.env.MONGODB_URI;
 
-// // Nouvelle configuration de connexion MongoDB
-// const mongoOptions = {
-//     useNewUrlParser: true, // Note: Ce n'est plus nécessaire, mais peut être laissé pour la compatibilité
-//     useUnifiedTopology: true,
-//   };
-  
-// Connexion à la base de données MongoDB
-mongoose.connect(uri);
+const mongoOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  tls: true,
+  tlsCAFile: caPath,
+  tlsAllowInvalidCertificates: true,
+};
+
+mongoose.connect(uri, mongoOptions);
 
 const connection = mongoose.connection;
 connection.once('open', () => {
   console.log('Connexion à MongoDB établie avec succès');
-  process.exit(0); // Quitte le script avec un code de sortie 0 (succès)
 });
 
 connection.on('error', (err) => {
   console.error('Erreur de connexion à MongoDB : ', err);
-  process.exit(1); // Quitte le script avec un code de sortie différent de zéro (échec)
 });
 
-// Fermer la connexion à MongoDB lorsque l'application se termine
+connection.on('disconnected', () => {
+  console.log('Déconnexion de MongoDB');
+});
+
 process.on('SIGINT', () => {
-  mongoose.connection.close(() => {
-    console.log('Connexion à MongoDB fermée en raison de la fin de l\'application');
+  connection.close(() => {
+    console.log('Fermeture de la connexion MongoDB à l\'arrêt de l\'application');
     process.exit(0);
   });
 });
+
+module.exports = mongoose;
