@@ -1,10 +1,10 @@
-const Audio = require('../../models/AudioModel');
-const ffmpeg = require('fluent-ffmpeg');
-const musicMetadata = require('music-metadata');
 const { uploadToS3 } = require('../../config/aws-config');
+const Playlist = require('../../models/PlaylistModel');
+const musicMetadata = require('music-metadata');
+const ffmpeg = require('fluent-ffmpeg');
 const uuid = require('uuid');
 
-async function createAudio(req, res, next) {
+async function createPlaylist(req, res, next) {
   try {
     const file = req.file; // Fichier uploadé
     const tempAudioFilePath = `chemin-temporaire/${file.originalname}.m4a`;
@@ -53,28 +53,46 @@ async function createAudio(req, res, next) {
       require('fs').unlinkSync(tempCoverFilePath);
     }
 
-    function generateAudioId() {
-      return uuid.v4();
+    function generateGroupId() {
+        return uuid.v4();
     }
 
-    // Enregistrement dans MongoDB avec l'URL de la couverture
-    const newAudio = new Audio({
-      audio_id: generateAudioId(), // Assure-toi d'avoir une fonction pour générer un ID unique
-      title: audioMetadata.common.title,
-      artist: audioMetadata.common.artist,
-      album: audioMetadata.common.album,
-      duration: audioMetadata.format.duration,
-      urlAudio: s3AudioUrl,
-      urlCover: s3CoverUrl,
-      // ... autres champs
+    // Création de la structure de groupe audio
+    const audioGroup = {
+      group_id: generateGroupId(),
+      group_title: 'Group Title', // À adapter selon tes besoins
+      audio_tracks: [
+        {
+          track_id: generateTrackId(),
+          title: audioMetadata.common.title,
+          artist: audioMetadata.common.artist,
+          // Autres métadonnées de piste
+        },
+        // ... d'autres pistes
+      ],
+    };
+
+    // Création de la playlist
+    const newPlaylist = new Playlist({
+      playlist_id: generatePlaylistId(),
+      title: 'Playlist Title', // À adapter selon tes besoins
+      creator: 'Creator Name', // À adapter selon tes besoins
+      description: 'Playlist Description', // À adapter selon tes besoins
+      audio_groups: [audioGroup],
     });
 
-    const savedAudio = await newAudio.save();
-    res.status(201).json(savedAudio);
+    // Enregistrement dans MongoDB avec l'URL de la couverture
+    if (s3CoverUrl) {
+      newPlaylist.urlCover = s3CoverUrl;
+    }
+
+    const savedPlaylist = await newPlaylist.save();
+    res.status(201).json(savedPlaylist);
+
   } catch (error) {
-    console.error('Erreur lors de la création de la bande sonore : ', error);
-    res.status(500).json({ error: 'Erreur lors de la création de la bande sonore.' });
+    console.error('Erreur lors de la création de la playlist : ', error);
+    res.status(500).json({ error: 'Erreur lors de la création de la playlist.' });
   }
 }
 
-module.exports = createAudio;
+module.exports = createPlaylist;

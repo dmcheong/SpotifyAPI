@@ -1,13 +1,13 @@
 const Audio = require('../../models/AudioModel');
 
-const getAllAudios = async (req, res) => {
-    try {
-      const audios = await Audio.find();
-      res.json(audios);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Internal Server Error');
-    }
-};
+async function getAllAudio(req, res, next) {
+  try {
+    const audioList = await Audio.find();
+    res.status(200).json(audioList);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des pistes audio : ', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des pistes audio.' });
+  }
+}
 
-module.exports = getAllAudios;
+module.exports = getAllAudio;

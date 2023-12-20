@@ -2,13 +2,15 @@ const { uploadToS3 } = require('../../config/aws-config');
 const Album = require('../../models/AlbumModel');
 const musicMetadata = require('music-metadata');
 const ffmpeg = require('fluent-ffmpeg');
+const uuid = require('uuid');
 
 async function createAlbum(req, res, next) {
   try {
-    const file = req.file; // Fichier uploadé
-    const tempAudioFilePath = `chemin-temporaire/${file.originalname}.m4a`;
+    const file = req.file;
 
     // Conversion en format .m4a
+    const tempAudioFilePath = `chemin-temporaire/${file.originalname}.m4a`;
+
     await new Promise((resolve, reject) => {
       ffmpeg()
         .input(file.buffer)
@@ -29,9 +31,7 @@ async function createAlbum(req, res, next) {
     require('fs').unlinkSync(tempAudioFilePath);
 
     // Extraction des métadonnées du fichier audio converti
-    const audioMetadata = await musicMetadata.parseFile(
-      Buffer.from(require('fs').readFileSync(tempAudioFilePath))
-    );
+    const audioMetadata = await musicMetadata.parseFile(Buffer.from(require('fs').readFileSync(tempAudioFilePath)));
 
     // Upload de la couverture dans S3 si elle existe
     if (audioMetadata.common.picture && audioMetadata.common.picture.length > 0) {
@@ -50,30 +50,36 @@ async function createAlbum(req, res, next) {
       // Suppression du fichier de couverture temporaire
       require('fs').unlinkSync(tempCoverFilePath);
 
+      function generateAlbumId() {
+        // Générer un ID unique pour l'album (peut utiliser une bibliothèque comme uuid)
+        return uuid.v4();
+      }
+      
+      function generateTrackId() {
+        // Générer un ID unique pour la piste (peut utiliser une bibliothèque comme uuid)
+        return uuid.v4();
+      }      
+
       // Enregistrement dans MongoDB avec l'URL de la couverture
       const newAlbum = new Album({
-        titre: audioMetadata.common.album,
-        artiste: audioMetadata.common.artist,
-        duree: audioMetadata.format.duration,
-        urlAudio: s3AudioUrl,
-        urlCover: s3CoverUrl,
-        // ... autres champs
+        album_id: generateAlbumId(), // Assure-toi d'avoir une fonction pour générer un ID unique
+        title: audioMetadata.common.album,
+        artist: audioMetadata.common.artist,
+        cover_url: s3CoverUrl || '', // Utilise l'URL de la couverture s'il y en a une, sinon une chaîne vide
+        tracks: [
+          {
+            track_id: generateTrackId(), // Assure-toi d'avoir une fonction pour générer un ID unique
+            title: audioMetadata.common.title,
+            duration: audioMetadata.format.duration.toString(), // Convertir en chaîne si nécessaire
+            // Autres métadonnées de piste
+          }
+          // ... d'autres pistes
+        ]
       });
 
       const savedAlbum = await newAlbum.save();
       res.status(201).json(savedAlbum);
-    } else {
-      // Si aucune couverture n'est trouvée, enregistrez sans URL de couverture
-      const newAlbum = new Album({
-        titre: audioMetadata.common.album,
-        artiste: audioMetadata.common.artist,
-        duree: audioMetadata.format.duration,
-        urlAudio: s3AudioUrl,
-        // ... autres champs
-      });
 
-      const savedAlbum = await newAlbum.save();
-      res.status(201).json(savedAlbum);
     }
   } catch (error) {
     console.error('Erreur lors de la création de l\'album : ', error);

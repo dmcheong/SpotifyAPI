@@ -2,6 +2,7 @@ const { uploadToS3 } = require('../../config/aws-config');
 const Artiste = require('../../models/ArtisteModel');
 const musicMetadata = require('music-metadata');
 const ffmpeg = require('fluent-ffmpeg');
+const uuid = require('uuid');
 
 async function createArtiste(req, res, next) {
   try {
@@ -34,6 +35,7 @@ async function createArtiste(req, res, next) {
     );
 
     // Upload de la couverture dans S3 si elle existe
+    let s3CoverUrl = null;
     if (audioMetadata.common.picture && audioMetadata.common.picture.length > 0) {
       const coverImage = audioMetadata.common.picture[0];
       const tempCoverFilePath = `chemin-temporaire/cover-${file.originalname}.jpg`;
@@ -42,33 +44,34 @@ async function createArtiste(req, res, next) {
       require('fs').writeFileSync(tempCoverFilePath, coverImage.data);
 
       // Upload de la couverture dans S3
-      const s3CoverUrl = await uploadToS3({
+      s3CoverUrl = await uploadToS3({
         buffer: Buffer.from(require('fs').readFileSync(tempCoverFilePath)),
         originalname: `cover-${file.originalname}.jpg`,
       });
 
       // Suppression du fichier de couverture temporaire
       require('fs').unlinkSync(tempCoverFilePath);
-
-      // Enregistrement dans MongoDB avec l'URL de la couverture
-      const newArtiste = new Artiste({
-        nom: audioMetadata.common.artist,
-        urlCover: s3CoverUrl,
-        // ... autres champs
-      });
-
-      const savedArtiste = await newArtiste.save();
-      res.status(201).json(savedArtiste);
-    } else {
-      // Si aucune couverture n'est trouvée, enregistrez sans URL de couverture
-      const newArtiste = new Artiste({
-        nom: audioMetadata.common.artist,
-        // ... autres champs
-      });
-
-      const savedArtiste = await newArtiste.save();
-      res.status(201).json(savedArtiste);
     }
+
+    function generateArtistId() {
+      return uuid.v4();
+    }
+    
+    // Enregistrement dans MongoDB avec l'URL de la couverture
+    const newArtiste = new Artiste({
+      artist_id: generateArtistId(),
+      name: audioMetadata.common.artist,
+      albums: [], // Initialement, aucun album associé
+      audio: [], // Initialement, aucun fichier audio associé
+      // ... autres champs
+    });
+
+    if (s3CoverUrl) {
+      newArtiste.urlCover = s3CoverUrl;
+    }
+
+    const savedArtiste = await newArtiste.save();
+    res.status(201).json(savedArtiste);
   } catch (error) {
     console.error('Erreur lors de la création de l\'artiste : ', error);
     res.status(500).json({ error: 'Erreur lors de la création de l\'artiste.' });

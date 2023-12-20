@@ -7,23 +7,37 @@ async function updateArtiste(req, res) {
   const updatedData = req.body; // Données mises à jour
 
   try {
-    // Si le fichier audio est mis à jour, assurez-vous de mettre à jour également dans AWS S3
+    // Récupération de l'artiste existant
+    const artiste = await Artiste.findById(artisteId);
+
+    // Si une couverture est mise à jour, assurez-vous de mettre à jour également dans AWS S3
     if (req.file) {
+      // Conversion en format image (à adapter selon vos besoins)
+      const tempCoverFilePath = `chemin-temporaire/cover-${req.file.originalname}.jpg`;
+
       // (votre logique existante pour la conversion, l'upload, etc.)
 
-      // Suppression de l'ancien fichier audio dans AWS S3
-      await deleteFromS3(artiste.urlAudio); // Assurez-vous que l'objet artiste a une propriété urlAudio
+      // Suppression de l'ancienne couverture dans AWS S3 (si existante)
+      if (artiste.urlCover) {
+        await deleteFromS3(artiste.urlCover);
+      }
 
-      // Upload du nouveau fichier audio dans AWS S3
-      const s3AudioUrl = await uploadToS3({
-        buffer: Buffer.from(require('fs').readFileSync(tempAudioFilePath)),
-        originalname: `${file.originalname}.m4a`,
+      // Upload de la nouvelle couverture dans AWS S3
+      const s3CoverUrl = await uploadToS3({
+        buffer: Buffer.from(require('fs').readFileSync(tempCoverFilePath)),
+        originalname: `cover-${req.file.originalname}.jpg`,
       });
 
-      updatedData.urlAudio = s3AudioUrl;
+      updatedData.urlCover = s3CoverUrl;
+
+      // Suppression du fichier de couverture temporaire
+      require('fs').unlinkSync(tempCoverFilePath);
     }
 
+    // Mise à jour des données dans MongoDB
     const updatedArtiste = await Artiste.findByIdAndUpdate(artisteId, updatedData, { new: true });
+
+    // Retourne l'artiste mis à jour en tant que réponse
     res.status(200).json(updatedArtiste);
   } catch (error) {
     console.error('Erreur lors de la mise à jour de l\'artiste : ', error);

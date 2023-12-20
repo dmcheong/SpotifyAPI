@@ -1,10 +1,14 @@
 const Album = require('../../models/AlbumModel');
 
-// Read - Récupération d'un album par ID
-async function getAlbumById(req, res) {
-  const albumId = req.params.id;
+async function getAlbumById(req, res, next) {
   try {
+    const albumId = req.params.id;
     const album = await Album.findById(albumId);
+
+    if (!album) {
+      return res.status(404).json({ error: 'Album non trouvé.' });
+    }
+
     res.status(200).json(album);
   } catch (error) {
     console.error('Erreur lors de la récupération de l\'album : ', error);

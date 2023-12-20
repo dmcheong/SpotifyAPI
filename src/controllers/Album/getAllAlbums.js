@@ -1,13 +1,13 @@
 const Album = require('../../models/AlbumModel');
 
-const getAllAlbums = async (req, res) => {
+async function getAllAlbums(req, res, next) {
   try {
-    const albums = await Album.find();
-    res.json(albums);
+    const albumList = await Album.find();
+    res.status(200).json(albumList);
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    console.error('Erreur lors de la récupération des albums : ', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des albums.' });
   }
-};
+}
 
 module.exports = getAllAlbums;

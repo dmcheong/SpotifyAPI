@@ -29,9 +29,10 @@ app.use(bodyParser.json());
 // const client = redis.createClient();
 
 // Définissez vos routes et vos contrôleurs ici
-app.use('/api/audio', audioRoutes);
+app.use('/api/audios', audioRoutes);
 app.use('/api/albums', albumRoutes);
 app.use('/api/artistes', artisteRoutes);
+app.use('/api/Playlists', PlaylistRoutes);
 
 // Écoutez le port
 app.listen(port, () => {

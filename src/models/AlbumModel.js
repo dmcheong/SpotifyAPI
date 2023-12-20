@@ -1,11 +1,19 @@
 const mongoose = require('mongoose');
 
 const albumSchema = new mongoose.Schema({
-  titre: { type: String, required: true },
-  artiste: { type: mongoose.Schema.Types.ObjectId, ref: 'Artiste', required: true },
-  audios: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Audio' }],
-  dateSortie: { type: Date },
-  urlAffichage: { type: String }, // L'URL pour l'affichage
+  album_id: String,
+  title: String,
+  artist: String,
+  cover_url: String,
+  tracks: [
+    {
+      track_id: String,
+      title: String,
+      duration: String,
+      // Autres métadonnées de piste
+    }
+    // ... d'autres pistes
+  ]
 });
 
 const Album = mongoose.model('Album', albumSchema);

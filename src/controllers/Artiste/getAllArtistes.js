@@ -1,13 +1,13 @@
 const Artiste = require('../../models/ArtisteModel');
 
-const getAllArtistes = async (req, res) => {
+async function getAllArtistes(req, res, next) {
   try {
-    const artistes = await Artiste.find();
-    res.json(artistes);
+    const artisteList = await Artiste.find();
+    res.status(200).json(artisteList);
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    console.error('Erreur lors de la récupération des artistes : ', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des artistes.' });
   }
-};
+}
 
 module.exports = getAllArtistes;

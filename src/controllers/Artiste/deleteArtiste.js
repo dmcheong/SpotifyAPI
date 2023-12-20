@@ -1,21 +1,41 @@
 const Artiste = require('../../models/ArtisteModel');
-const { deleteObjectFromS3 } = require('../../config/aws-config');
+const Album = require('../../models/AlbumModel');
+const Audio = require('../../models/AudioModel');
+const { deleteFromS3 } = require('../../config/aws-config');
 
-const deleteArtiste = async (req, res) => {
+async function deleteArtiste(req, res, next) {
   try {
-    const artisteId = req.params.id;
+    const artisteId = req.params.id; // Récupère l'ID de l'artiste à supprimer depuis les paramètres de la requête
 
-    // Suppression de l'artiste dans la base de données
-    const deletedArtiste = await Artiste.findByIdAndDelete(artisteId);
+    // Recherche l'artiste dans la base de données
+    const artiste = await Artiste.findById(artisteId);
 
-    // Suppression du fichier multimédia lié dans le bucket S3
-    await deleteObjectFromS3(deletedArtiste.mediaKey); // Assurez-vous d'avoir une clé appropriée dans votre modèle d'artiste
+    // Vérifie si l'artiste existe
+    if (!artiste) {
+      return res.status(404).json({ error: 'Artiste non trouvé' });
+    }
 
-    res.json({ message: 'Artiste deleted successfully' });
+    // Supprime les albums associés à l'artiste
+    await Album.deleteMany({ artiste: artisteId });
+
+    // Supprime les pistes audio associées aux albums de l'artiste
+    const albums = await Album.find({ artiste: artisteId });
+    for (const album of albums) {
+      await Audio.deleteMany({ album: album._id });
+      // Supprime les fichiers audio du bucket S3
+      for (const audio of album.tracks) {
+        await deleteFromS3(audio.urlAudio);
+      }
+    }
+
+    // Supprime l'artiste de la base de données
+    await Artiste.findByIdAndDelete(artisteId);
+
+    res.status(204).send(); // Renvoie une réponse sans contenu en cas de succès
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
+    console.error('Erreur lors de la suppression de l\'artiste : ', error);
+    res.status(500).json({ error: 'Erreur lors de la suppression de l\'artiste.' });
   }
-};
+}
 
 module.exports = deleteArtiste;
