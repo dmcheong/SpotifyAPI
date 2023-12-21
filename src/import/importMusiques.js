@@ -150,10 +150,6 @@ async function importLocalFiles() {
       // Extrait les métadonnées du fichier local
       const metadata = await extractMetadata(localFilePath);
 
-      // Upload le fichier dans S3
-      const s3Key = `ynovSpotify/${metadata.artiste} - ${metadata.album}/tracks/${metadata.titre}.m4a`;
-      const s3Url = await uploadToS3(localFilePath, s3Key);
-
       // Création de l'artiste s'il n'existe pas
       let artiste = await Artiste.findOne({ name: metadata.artiste });
       if (!artiste) {
@@ -175,6 +171,10 @@ async function importLocalFiles() {
         artiste.albums.push(album.album_id);
         await artiste.save();
       }
+
+      // Upload le fichier dans S3
+      const s3Key = `ynovSpotify/${metadata.artiste} - ${metadata.album}/tracks/${metadata.titre}.m4a`;
+      const s3Url = await uploadToS3(localFilePath, s3Key);
 
       // Enregistrement dans MongoDB avec l'URL de la couverture
       const newAudio = await Audio.create({
@@ -210,3 +210,4 @@ async function importLocalFiles() {
 // Exécute la fonction d'importation
 importLocalFiles();
 
+// ...

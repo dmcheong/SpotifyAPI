@@ -7,10 +7,7 @@ const playlistSchema = new mongoose.Schema({
   description: String,
   audio_tracks: [
     {
-      track_id: String,
-      title: String,
-      artist: String,
-      // Autres métadonnées de piste
+      type: mongoose.Schema.Types.ObjectId, ref: 'Audio'
     }
     // ... d'autres pistes
   ]

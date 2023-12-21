@@ -7,10 +7,7 @@ const albumSchema = new mongoose.Schema({
   cover_url: String,
   tracks: [
     {
-      track_id: String,
-      title: String,
-      duration: String,
-      // Autres métadonnées de piste
+      type: mongoose.Schema.Types.ObjectId, ref: 'Audio'
     }
     // ... d'autres pistes
   ]
