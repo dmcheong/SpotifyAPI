@@ -9,10 +9,10 @@ const updateAlbum = require('../controllers/Album/updateAlbum');
 const deleteAlbum = require('../controllers/Album/deleteAlbum');
 
 // Routes pour les albums
-router.get('/albums', getAllAlbums);
-router.get('/albums/:id', getAlbumById);
-router.post('/albums', createAlbum);
-router.put('/albums/:id', updateAlbum);
-router.delete('/albums/:id', deleteAlbum);
+router.get('/', getAllAlbums);
+router.get('/:id', getAlbumById);
+router.post('/', createAlbum);
+router.put('/:id', updateAlbum);
+router.delete('/:id', deleteAlbum);
 
 module.exports = router;

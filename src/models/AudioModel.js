@@ -2,11 +2,12 @@ const mongoose = require('mongoose');
 
 const audioSchema = new mongoose.Schema({
   audio_id: String,
+  urlAudio: String,
   title: String,
   artist: String,
+  cover_url: String,
   album: {
     type: String,
-    required: true,
   },
   duration: String,
   // Autres métadonnées audio

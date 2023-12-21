@@ -9,10 +9,10 @@ const updateArtiste = require('../controllers/Artiste/updateArtiste');
 const deleteArtiste = require('../controllers/Artiste/deleteArtiste');
 
 // Routes pour les artistes
-router.get('/artistes', getAllArtistes);
-router.get('/artistes/:id', getArtisteById);
-router.post('/artistes', createArtiste);
-router.put('/artistes/:id', updateArtiste);
-router.delete('/artistes/:id', deleteArtiste);
+router.get('/', getAllArtistes);
+router.get('/:id', getArtisteById);
+router.post('/', createArtiste);
+router.put('/:id', updateArtiste);
+router.delete('/:id', deleteArtiste);
 
 module.exports = router;

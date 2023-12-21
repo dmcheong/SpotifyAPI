@@ -28,11 +28,11 @@ connection.on('disconnected', () => {
   console.log('Déconnexion de MongoDB');
 });
 
-process.on('SIGINT', () => {
-  connection.close(() => {
-    console.log('Fermeture de la connexion MongoDB à l\'arrêt de l\'application');
-    process.exit(0);
-  });
-});
+// process.on('SIGINT', () => {
+//   connection.close(() => {
+//     console.log('Fermeture de la connexion MongoDB à l\'arrêt de l\'application');
+//     process.exit(0);
+//   });
+// });
 
 module.exports = mongoose;

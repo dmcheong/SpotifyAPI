@@ -35,8 +35,12 @@ const Audio = mongoose.model('Audio', new mongoose.Schema({
   artist: String,
   album: String,
   duration: String,
+  urlAudio: String,
+  album: {
+    type: String,
+  },
   // Autres métadonnées audio
-}, { collection: 'Audio' }));
+}));
 
 // Modèle MongoDB pour les données d'artiste
 const Artiste = mongoose.model('Artiste', new mongoose.Schema({
@@ -45,7 +49,7 @@ const Artiste = mongoose.model('Artiste', new mongoose.Schema({
   albums: [String],
   audio: [String],
   // Autres métadonnées artiste
-}, { collection: 'Artiste' }));
+}));
 
 // Modèle MongoDB pour les données d'album
 const Album = mongoose.model('Album', new mongoose.Schema({
@@ -62,7 +66,7 @@ const Album = mongoose.model('Album', new mongoose.Schema({
     }
     // ... d'autres pistes
   ]
-}, { collection: 'Album' }));
+}));
 
 // Répertoire local contenant les fichiers audio
 const localAudioDirectory = './MusiqueLibrayrie';

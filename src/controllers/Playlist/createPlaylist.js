@@ -61,10 +61,12 @@ async function createPlaylist(req, res, next) {
     const audioGroup = {
       group_id: generateGroupId(),
       group_title: 'Group Title', // À adapter selon tes besoins
+      artist: audioMetadata.common.artist,
       audio_tracks: [
         {
           track_id: generateTrackId(),
           title: audioMetadata.common.title,
+          artist: audioMetadata.common.artist,
           artist: audioMetadata.common.artist,
           // Autres métadonnées de piste
         },

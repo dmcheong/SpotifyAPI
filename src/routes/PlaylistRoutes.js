@@ -8,11 +8,11 @@ const createPlaylist = require('../controllers/Playlist/createPlaylist');
 const updatePlaylist = require('../controllers/Playlist/updatePlaylist');
 const deletePlaylist = require('../controllers/Playlist/deletePlaylist');
 
-// Routes pour les Playlists
-router.get('/playlists', getAllPlaylists);
-router.get('/playlists/:id', getPlaylistById);
-router.post('/playlists', createPlaylist);
-router.put('/playlists/:id', updatePlaylist);
-router.delete('/playlists/:id', deletePlaylist);
+// Routes pour les Playlist
+router.get('/', getAllPlaylists);
+router.get('/:id', getPlaylistById);
+router.post('/', createPlaylist);
+router.put('/:id', updatePlaylist);
+router.delete('/:id', deletePlaylist);
 
 module.exports = router;

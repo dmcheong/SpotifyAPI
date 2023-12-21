@@ -11,6 +11,7 @@ const redis = require('redis');
 const audioRoutes = require('./src/routes/AudioRoutes');
 const albumRoutes = require('./src/routes/AlbumRoutes');
 const artisteRoutes = require('./src/routes/ArtistesRoutes');
+const playlistRoutes = require('./src/routes/PlaylistRoutes');
 
 // Connexion à la base de données MongoDB
 const mongoose = require('./src/config/mongodb-config'); // Assurez-vous que le chemin est correct
@@ -28,11 +29,16 @@ app.use(bodyParser.json());
 // // Configurations Redis
 // const client = redis.createClient();
 
+// Route de bienvenue
+app.get('/', (req, res) => {
+  res.send('Bienvenue sur votre API !');
+});
+
 // Définissez vos routes et vos contrôleurs ici
 app.use('/api/audios', audioRoutes);
 app.use('/api/albums', albumRoutes);
 app.use('/api/artistes', artisteRoutes);
-app.use('/api/Playlists', PlaylistRoutes);
+app.use('/api/playlist', playlistRoutes);
 
 // Écoutez le port
 app.listen(port, () => {

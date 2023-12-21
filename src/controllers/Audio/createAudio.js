@@ -61,9 +61,9 @@ async function createAudio(req, res, next) {
     const newAudio = new Audio({
       audio_id: generateAudioId(), // Assure-toi d'avoir une fonction pour générer un ID unique
       title: audioMetadata.common.title,
-      artist: audioMetadata.common.artist,
       album: audioMetadata.common.album,
       duration: audioMetadata.format.duration,
+      artist: audioMetadata.common.artist,
       urlAudio: s3AudioUrl,
       urlCover: s3CoverUrl,
       // ... autres champs
