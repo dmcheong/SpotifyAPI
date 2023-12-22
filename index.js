@@ -6,6 +6,7 @@ const port = process.env.PORT;
 const bodyParser = require('body-parser');
 const multer = require('multer');
 const redis = require('redis');
+const cors = require("cors");
 
 // Routes
 const audioRoutes = require('./src/routes/AudioRoutes');
@@ -21,7 +22,7 @@ const s3 = require('./src/config/aws-config'); // Assurez-vous que le chemin est
 
 // Middleware pour analyser les requêtes JSON
 app.use(bodyParser.json());
-
+app.use(cors());
 // // Configurations Multer pour le traitement des fichiers
 // const storage = multer.memoryStorage();
 // // const upload = multer({ storage: storage });
