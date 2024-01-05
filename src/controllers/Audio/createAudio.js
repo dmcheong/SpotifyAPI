@@ -73,7 +73,7 @@ async function createAudio(req, res, next) {
     res.status(201).json(savedAudio);
   } catch (error) {
     console.error('Erreur lors de la création de la bande sonore : ', error);
-    res.status(500).json({ error: 'Erreur lors de la création de la bande sonore.' });
+    res.status(500).json({ error: 'Erreur lors de la création de la bande sonore.', details: error.message });
   }
 }
 

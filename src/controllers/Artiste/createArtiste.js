@@ -75,7 +75,7 @@ async function createArtiste(req, res, next) {
     res.status(201).json(savedArtiste);
   } catch (error) {
     console.error('Erreur lors de la création de l\'artiste : ', error);
-    res.status(500).json({ error: 'Erreur lors de la création de l\'artiste.' });
+    res.status(500).json({ error: 'Erreur lors de la création de l\'artiste.', details: error.message });
   }
 }
 

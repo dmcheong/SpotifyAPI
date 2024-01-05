@@ -92,7 +92,7 @@ async function createPlaylist(req, res, next) {
 
   } catch (error) {
     console.error('Erreur lors de la création de la playlist : ', error);
-    res.status(500).json({ error: 'Erreur lors de la création de la playlist.' });
+    res.status(500).json({ error: 'Erreur lors de la création de la playlist.', details: error.message });
   }
 }
 

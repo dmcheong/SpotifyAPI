@@ -83,7 +83,7 @@ async function createAlbum(req, res, next) {
     }
   } catch (error) {
     console.error('Erreur lors de la création de l\'album : ', error);
-    res.status(500).json({ error: 'Erreur lors de la création de l\'album.' });
+    res.status(500).json({ error: 'Erreur lors de la création de l\'album.', details: error.message });
   }
 }
 
