@@ -60,8 +60,8 @@ async function createArtiste(req, res, next) {
     // Enregistrement dans MongoDB avec l'URL de la couverture
     const newArtiste = new Artiste({
       artist_id: generateArtistId(),
-      name: audioMetadata.common.artist,
-      artist: audioMetadata.common.artist,
+      name: req.body.name, 
+      artist: req.body.name, 
       albums: [], // Initialement, aucun album associé
       audio: [], // Initialement, aucun fichier audio associé
       // ... autres champs

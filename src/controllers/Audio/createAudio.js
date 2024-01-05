@@ -60,10 +60,10 @@ async function createAudio(req, res, next) {
     // Enregistrement dans MongoDB avec l'URL de la couverture
     const newAudio = new Audio({
       audio_id: generateAudioId(), // Assure-toi d'avoir une fonction pour générer un ID unique
-      title: audioMetadata.common.title,
-      album: audioMetadata.common.album,
-      duration: audioMetadata.format.duration,
-      artist: audioMetadata.common.artist,
+      title: req.body.audioTitle,
+      album: req.body.albumTitle,
+      duration: req.body.audioDuration,
+      artist: req.body.artist,
       urlAudio: s3AudioUrl,
       urlCover: s3CoverUrl,
       // ... autres champs

@@ -60,14 +60,13 @@ async function createPlaylist(req, res, next) {
     // Création de la structure de groupe audio
     const audioGroup = {
       group_id: generateGroupId(),
-      group_title: 'Group Title', // À adapter selon tes besoins
-      artist: audioMetadata.common.artist,
+      group_title: req.body.title,
+      artist: req.body.artist,
       audio_tracks: [
         {
           track_id: generateTrackId(),
-          title: audioMetadata.common.title,
-          artist: audioMetadata.common.artist,
-          artist: audioMetadata.common.artist,
+          title: req.body.trackTitle,
+          artist: req.body.artist,
           // Autres métadonnées de piste
         },
         // ... d'autres pistes
@@ -77,9 +76,9 @@ async function createPlaylist(req, res, next) {
     // Création de la playlist
     const newPlaylist = new Playlist({
       playlist_id: generatePlaylistId(),
-      title: 'Playlist Title', // À adapter selon tes besoins
-      creator: 'Creator Name', // À adapter selon tes besoins
-      description: 'Playlist Description', // À adapter selon tes besoins
+      title: req.body.title,
+      creator: req.body.creator,
+      description: req.body.description,
       audio_groups: [audioGroup],
     });
 

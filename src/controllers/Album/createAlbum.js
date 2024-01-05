@@ -63,14 +63,14 @@ async function createAlbum(req, res, next) {
       // Enregistrement dans MongoDB avec l'URL de la couverture
       const newAlbum = new Album({
         album_id: generateAlbumId(), // Assure-toi d'avoir une fonction pour générer un ID unique
-        title: audioMetadata.common.album,
-        artist: audioMetadata.common.artist,
+        title: req.body.albumTitle,
+        artist: req.body.artist,
         cover_url: s3CoverUrl || '', // Utilise l'URL de la couverture s'il y en a une, sinon une chaîne vide
         tracks: [
           {
             track_id: generateTrackId(), // Assure-toi d'avoir une fonction pour générer un ID unique
-            title: audioMetadata.common.title,
-            duration: audioMetadata.format.duration.toString(), // Convertir en chaîne si nécessaire
+            title: req.body.trackTitle,
+            duration: req.body.trackDuration.toString(), // Convertir en chaîne si nécessaire
             // Autres métadonnées de piste
           }
           // ... d'autres pistes
