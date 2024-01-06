@@ -2,7 +2,6 @@ const Audio = require('../../models/AudioModel');
 const ffmpeg = require('fluent-ffmpeg');
 const musicMetadata = require('music-metadata');
 const { uploadToS3 } = require('../../config/aws-config');
-const uuid = require('uuid');
 
 async function createAudio(req, res, next) {
   try {
@@ -20,6 +19,11 @@ async function createAudio(req, res, next) {
         .save(tempAudioFilePath);
     });
 
+    // Extraction des métadonnées du fichier audio converti
+    const audioMetadata = await musicMetadata.parseFile(
+      Buffer.from(require('fs').readFileSync(tempAudioFilePath))
+    );
+
     // Upload du fichier audio dans S3
     const s3AudioUrl = await uploadToS3({
       buffer: Buffer.from(require('fs').readFileSync(tempAudioFilePath)),
@@ -28,11 +32,6 @@ async function createAudio(req, res, next) {
 
     // Suppression du fichier audio temporaire
     require('fs').unlinkSync(tempAudioFilePath);
-
-    // Extraction des métadonnées du fichier audio converti
-    const audioMetadata = await musicMetadata.parseFile(
-      Buffer.from(require('fs').readFileSync(tempAudioFilePath))
-    );
 
     // Upload de la couverture dans S3 si elle existe
     let s3CoverUrl = null;
@@ -53,13 +52,8 @@ async function createAudio(req, res, next) {
       require('fs').unlinkSync(tempCoverFilePath);
     }
 
-    function generateAudioId() {
-      return uuid.v4();
-    }
-
     // Enregistrement dans MongoDB avec l'URL de la couverture
     const newAudio = new Audio({
-      audio_id: generateAudioId(), // Assure-toi d'avoir une fonction pour générer un ID unique
       title: req.body.audioTitle,
       album: req.body.albumTitle,
       duration: req.body.audioDuration,
@@ -73,7 +67,7 @@ async function createAudio(req, res, next) {
     res.status(201).json(savedAudio);
   } catch (error) {
     console.error('Erreur lors de la création de la bande sonore : ', error);
-    res.status(500).json({ error: 'Erreur lors de la création de la bande sonore.', details: error.message });
+    res.status(500).json({ error: 'Erreur lors de la création de la bande sonore.' });
   }
 }
 

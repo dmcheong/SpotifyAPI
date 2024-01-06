@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const audioSchema = new mongoose.Schema({
-  audio_id: String,
   urlAudio: String,
   title: String,
   artist: String,

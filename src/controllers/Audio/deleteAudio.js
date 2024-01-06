@@ -1,6 +1,7 @@
 const Audio = require('../../models/AudioModel');
+const Playlist = require('../../models/AlbumModel');
+const Artiste = require('../../models/ArtisteModel');
 const { deleteFromS3 } = require('../../config/aws-config');
-const Playlist = require('../../models/PlaylistModel');
 
 async function deleteAudio(req, res, next) {
   try {
@@ -14,12 +15,29 @@ async function deleteAudio(req, res, next) {
       return res.status(404).json({ error: 'Audio non trouvé' });
     }
 
-    // Supprime l'audio de l'album associé (s'il est associé à un album)
+    // Retirer l'audio de l'album associé (s'il est associé à un album)
     if (audio.album) {
-      await Audio.deleteMany({ album: audio.album });
+      const album = await Album.findById(audio.album);
+      if (album) {
+        const index = album.tracks.indexOf(audioId);
+        if (index !== -1) {
+          album.tracks.splice(index, 1);
+          await album.save();
+        }
+      }
     }
 
-    // Supprime l'audio de toutes les playlists associées (s'il est associé à des playlists)
+    // Retirer l'audio des albums associés à l'artiste (s'il est associé à des albums)
+    const artist = await Artiste.findOne({ audio: audioId });
+    if (artist) {
+      const index = artist.audio.indexOf(audioId);
+      if (index !== -1) {
+        artist.audio.splice(index, 1);
+        await artist.save();
+      }
+    }
+
+    // Supprimer l'audio de toutes les playlists associées (s'il est associé à des playlists)
     const playlists = await Playlist.find({ 'audio_groups.audio_tracks.track_id': audioId });
     for (const playlist of playlists) {
       for (const group of playlist.audio_groups) {
@@ -31,10 +49,10 @@ async function deleteAudio(req, res, next) {
       await playlist.save();
     }
 
-    // Supprime le fichier audio du bucket S3
+    // Supprimer le fichier audio du bucket S3
     await deleteFromS3(audio.urlAudio);
 
-    // Supprime l'audio de la base de données
+    // Supprimer l'audio de la base de données
     await Audio.findByIdAndDelete(audioId);
 
     res.status(204).send(); // Renvoie une réponse sans contenu en cas de succès

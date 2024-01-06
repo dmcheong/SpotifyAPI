@@ -18,8 +18,8 @@ async function updateAudio(req, res) {
       // (votre logique existante pour la conversion, l'upload, etc.)
 
       // Suppression de l'ancienne couverture dans AWS S3 (si existante)
-      if (audio.urlCover) {
-        await deleteFromS3(audio.urlCover);
+      if (audio.cover_url) {
+        await deleteFromS3(audio.cover_url);
       }
 
       // Upload de la nouvelle couverture dans AWS S3
@@ -28,7 +28,7 @@ async function updateAudio(req, res) {
         originalname: `cover-${req.file.originalname}.jpg`,
       });
 
-      updatedData.urlCover = s3CoverUrl;
+      updatedData.cover_url = s3CoverUrl; // Correction du champ à mettre à jour
 
       // Suppression du fichier de couverture temporaire
       require('fs').unlinkSync(tempCoverFilePath);
@@ -46,3 +46,4 @@ async function updateAudio(req, res) {
 }
 
 module.exports = updateAudio;
+

@@ -14,7 +14,6 @@ const cors = require("cors");
 const audioRoutes = require('./src/routes/AudioRoutes');
 const albumRoutes = require('./src/routes/AlbumRoutes');
 const artisteRoutes = require('./src/routes/ArtistesRoutes');
-const playlistRoutes = require('./src/routes/PlaylistRoutes');
 
 // Connexion à la base de données MongoDB
 const mongoose = require('./src/config/mongodb-config'); // Assurez-vous que le chemin est correct
@@ -42,21 +41,19 @@ app.get('/', (req, res) => {
 // app.use('/api/audios', audioRoutes);
 // app.use('/api/albums', albumRoutes);
 // app.use('/api/artistes', artisteRoutes);
-// app.use('/api/playlist', playlistRoutes);
 
 // Utiliser le middleware upload pour les routes qui nécessitent le téléchargement de fichiers
-app.use('/api/audios', upload.fields([]), audioRoutes);
-app.use('/api/albums', upload.fields([]), albumRoutes);
-app.use('/api/artistes', upload.fields([]), artisteRoutes);
-app.use('/api/playlist', upload.fields([]), playlistRoutes);
+app.use('/api/audios', upload.single('file'), audioRoutes);
+app.use('/api/albums', upload.single('file'), albumRoutes);
+app.use('/api/artistes', upload.single('file'), artisteRoutes);
 
 // Utilisez promisify pour transformer les fonctions Redis en fonctions promisifiées
 const getAsync = util.promisify(client.get).bind(client);
 const setAsync = util.promisify(client.set).bind(client);
 
-// Exemple d'utilisation dans un routeur ou contrôleur
-app.get('/api/audios/audio_id', async (req, res) => {
-  const audioId = req.params.audioId;
+// Exemple d'utilisation dans un routeur ou contrôleur pour les audios
+app.get('/api/audios/:audio_id', async (req, res) => {
+  const audioId = req.params.audio_id;
 
   try {
     // Vérifie si les données audio sont en cache
@@ -83,8 +80,8 @@ app.get('/api/audios/audio_id', async (req, res) => {
 });
 
 // Exemple d'utilisation dans un routeur ou contrôleur pour les albums
-app.get('/api/album/album_id', async (req, res) => {
-  const albumId = req.params.albumId;
+app.get('/api/albums/:album_id', async (req, res) => {
+  const albumId = req.params.album_id;
 
   try {
     // Vérifie si les données de l'album sont en cache
@@ -109,6 +106,7 @@ app.get('/api/album/album_id', async (req, res) => {
     res.status(500).json({ error: 'Erreur lors de la récupération des données de l\'album.' });
   }
 });
+
 
 // Écoutez le port
 app.listen(port, () => {

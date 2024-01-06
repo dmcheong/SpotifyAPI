@@ -1,6 +1,5 @@
 const Album = require('../../models/AlbumModel');
 const { uploadToS3, deleteFromS3 } = require('../../config/aws-config');
-const musicMetadata = require('music-metadata');
 const ffmpeg = require('fluent-ffmpeg');
 
 // Update - Mise à jour d'un album par ID
@@ -16,7 +15,7 @@ async function updateAlbum(req, res) {
     if (req.file) {
       // Conversion en format .m4a
       const tempAudioFilePath = `chemin-temporaire/${req.file.originalname}.m4a`;
-      
+
       await new Promise((resolve, reject) => {
         ffmpeg()
           .input(req.file.buffer)
@@ -36,13 +35,14 @@ async function updateAlbum(req, res) {
         originalname: `${req.file.originalname}.m4a`,
       });
 
+      // Mise à jour de l'URL audio dans les données mises à jour
       updatedData.urlAudio = s3AudioUrl;
 
       // Suppression du fichier audio temporaire
       require('fs').unlinkSync(tempAudioFilePath);
     }
 
-    // Mise à jour des données dans MongoDB
+    // Mise à jour des autres données dans MongoDB
     const updatedAlbum = await Album.findByIdAndUpdate(albumId, updatedData, { new: true });
 
     // Retourne l'album mis à jour en tant que réponse
@@ -54,3 +54,4 @@ async function updateAlbum(req, res) {
 }
 
 module.exports = updateAlbum;
+
