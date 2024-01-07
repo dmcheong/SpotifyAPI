@@ -1,19 +1,29 @@
-# SpotifyAPI
-création de l'API pour spotify en NodeJS.
+À METTRE DANS VOTRE PROJET SOUS PEINE DE ZÉRO
+Équipe :
+Charlot junior Kuete
+MBABOU Romario Ulrich
+Cheong David
+Rendu
+Liens GITHUB pour le rendu :
 
-Commande à taper(environnement Linux):
+BackOffice :https://github.com/charlotkuete11/spotify-office
+Front :https://github.com/Rpmario/projet_react_spotify
+Back :https://github.com/dmcheong/SpotifyAPI
+Mise en Prod
+Lien de vos projets mis en prod :
 
-<b>cd SpotifyAPI</b><br>
-<b>sudo apt get update</b><br>
-<b>npm install ou npm i</b><br>
-<p>A cause de problème de version Node en production à cause de npm install</p>
-<b>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-</b><br>
-<b>nvm install 21</b><br>
-<b>nvm use 21</b><br>
-<b>npm update</b><br>
-<b>npm start</b><br>
+BackOffice :
+Front :
+Back :http://ec2-15-188-52-96.eu-west-3.compute.amazonaws.com/api/
+Liens Vidéo Demande Spécifique
+Lors de votre passage, je vous ai demandé d'ajouter des fonctionnalités :
+À CHAQUE FONCTIONNALITÉ UNE VIDÉO, PAS DE COMPILATION :
+UN LIEN YOUTUBE S'IL VOUS PLAÎT, METTEZ-LA EN PRIVÉ
 
-Fichier à créer et configurer:
+Demande 1 :
+Demande 2 :
+Demande 3 :
+SOUHAITEZ-VOUS UNE ANALYSE ET DES RETOURS CONCRETS SUR VOTRE CODE ?
+Dites oui si vous vous en souciez.
 
-<b>.env</b>
+OUI, s'il-te-plaît.
