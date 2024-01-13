@@ -2,12 +2,16 @@ const mongoose = require('mongoose');
 
 const albumSchema = new mongoose.Schema({
   title: String,
-  artist: String,
+  artistes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Artiste'
+  }],
   date_sortie: String,
   cover_url: String,
-  tracks: [
+  audios: [
     {
-      type: mongoose.Schema.Types.ObjectId, ref: 'Audio'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Audio'
     }
     // ... d'autres pistes
   ]

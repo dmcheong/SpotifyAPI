@@ -1,10 +1,11 @@
 const Album = require('../../models/AlbumModel');
 const Audio = require('../../models/AudioModel');
-const { deleteFromS3 } = require('../../config/aws-config');
+const Artiste = require('../../models/ArtisteModel');
+const { deleteFromS3 } = require('../../utils/s3Utils');
 
 async function deleteAlbum(req, res, next) {
   try {
-    const albumId = req.params.id; // Récupère l'ID de l'album à supprimer depuis les paramètres de la requête
+    const albumId = req.params.id;
 
     // Recherche l'album dans la base de données
     const album = await Album.findById(albumId);
@@ -15,11 +16,23 @@ async function deleteAlbum(req, res, next) {
     }
 
     // Supprime les pistes audio associées à l'album
-    await Audio.deleteMany({ album: albumId });
+    await Audio.deleteMany({ albums: albumId });
 
     // Supprime les fichiers audio du bucket S3
-    for (const audio of album.tracks) {
+    for (const audio of album.audios) {
       await deleteFromS3(audio.urlAudio);
+    }
+
+    // Retire l'ID de l'album de la liste des albums de l'artiste
+    for (const artistId of album.artistes) {
+      const artiste = await Artiste.findById(artistId);
+      if (artiste) {
+        const index = artiste.albums.indexOf(albumId);
+        if (index !== -1) {
+          artiste.albums.splice(index, 1);
+          await artiste.save();
+        }
+      }
     }
 
     // Supprime l'album de la base de données

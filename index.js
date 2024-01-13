@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const port = process.env.PORT;
 const bodyParser = require('body-parser');
-const multer = require('multer');
+// const multer = require('multer');
 const redis = require('redis');
 const client = redis.createClient();
 const util = require('util');
@@ -26,8 +26,8 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Configurations Multer pour le traitement des fichiers
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
 
 // // Configurations Redis
 // const client = redis.createClient();
@@ -38,14 +38,14 @@ app.get('/', (req, res) => {
 });
 
 // // Définissez vos routes et vos contrôleurs ici
-// app.use('/api/audios', audioRoutes);
-// app.use('/api/albums', albumRoutes);
-// app.use('/api/artistes', artisteRoutes);
+app.use('/api/audios', audioRoutes);
+app.use('/api/albums', albumRoutes);
+app.use('/api/artistes', artisteRoutes);
 
 // Utiliser le middleware upload pour les routes qui nécessitent le téléchargement de fichiers
-app.use('/api/audios', upload.single('file'), audioRoutes);
-app.use('/api/albums', upload.single('file'), albumRoutes);
-app.use('/api/artistes', upload.single('file'), artisteRoutes);
+// app.use('/api/audios', upload.single('file'), audioRoutes);
+// app.use('/api/albums', upload.single('file'), albumRoutes);
+// app.use('/api/artistes', upload.single('file'), artisteRoutes);
 
 // Utilisez promisify pour transformer les fonctions Redis en fonctions promisifiées
 const getAsync = util.promisify(client.get).bind(client);

@@ -5,7 +5,7 @@ const { deleteFromS3 } = require('../../config/aws-config');
 
 async function deleteAudio(req, res, next) {
   try {
-    const audioId = req.params.id; // Récupère l'ID de l'audio à supprimer depuis les paramètres de la requête
+    const audioId = req.params.id;
 
     // Recherche l'audio dans la base de données
     const audio = await Audio.findById(audioId);
@@ -19,34 +19,16 @@ async function deleteAudio(req, res, next) {
     if (audio.album) {
       const album = await Album.findById(audio.album);
       if (album) {
-        const index = album.tracks.indexOf(audioId);
-        if (index !== -1) {
-          album.tracks.splice(index, 1);
-          await album.save();
-        }
+        album.audios = album.audios.filter(a => a.toString() !== audioId);
+        await album.save();
       }
     }
 
     // Retirer l'audio des albums associés à l'artiste (s'il est associé à des albums)
-    const artist = await Artiste.findOne({ audio: audioId });
+    const artist = await Artiste.findOne({ audios: audioId });
     if (artist) {
-      const index = artist.audio.indexOf(audioId);
-      if (index !== -1) {
-        artist.audio.splice(index, 1);
-        await artist.save();
-      }
-    }
-
-    // Supprimer l'audio de toutes les playlists associées (s'il est associé à des playlists)
-    const playlists = await Playlist.find({ 'audio_groups.audio_tracks.track_id': audioId });
-    for (const playlist of playlists) {
-      for (const group of playlist.audio_groups) {
-        const index = group.audio_tracks.findIndex(track => track.track_id === audioId);
-        if (index !== -1) {
-          group.audio_tracks.splice(index, 1);
-        }
-      }
-      await playlist.save();
+      artist.audios = artist.audios.filter(a => a.toString() !== audioId);
+      await artist.save();
     }
 
     // Supprimer le fichier audio du bucket S3
