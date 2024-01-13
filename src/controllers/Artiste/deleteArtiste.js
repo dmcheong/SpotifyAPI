@@ -1,7 +1,7 @@
 const Artiste = require('../../models/ArtisteModel');
 const Album = require('../../models/AlbumModel');
 const Audio = require('../../models/AudioModel');
-const { deleteFromS3 } = require('../../utils/s3Utils');
+// const { deleteFromS3 } = require('../../utils/s3Utils');
 
 async function deleteArtiste(req, res, next) {
   try {
