@@ -1,7 +1,7 @@
 const Artiste = require('../../models/ArtisteModel');
 const Album = require('../../models/AlbumModel');
 const Audio = require('../../models/AudioModel');
-// const { deleteFromS3 } = require('../../utils/s3Utils');
+const { deleteFromS3 } = require('../../config/aws-config');
 
 async function deleteArtiste(req, res, next) {
   try {
@@ -15,8 +15,8 @@ async function deleteArtiste(req, res, next) {
       return res.status(404).json({ error: 'Artiste non trouvé' });
     }
 
-    // Supprime les albums associés à l'artiste
-    await Album.deleteMany({ artistes: artisteId });
+    // Retirer l'artiste des albums associés
+    await Album.updateMany({ artistes: artisteId }, { $pull: { artistes: artisteId } });
 
     // Supprime les pistes audio associées aux albums de l'artiste
     const albums = await Album.find({ artistes: artisteId });

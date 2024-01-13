@@ -16,30 +16,19 @@ async function updateAlbum(req, res) {
       // Conversion en format .m4a
       const tempAudioFilePath = `chemin-temporaire/${req.file.originalname}.m4a`;
 
-      await new Promise((resolve, reject) => {
-        ffmpeg()
-          .input(req.file.buffer)
-          .audioCodec('aac')
-          .toFormat('m4a')
-          .on('end', resolve)
-          .on('error', reject)
-          .save(tempAudioFilePath);
-      });
+      await convertToM4a(req.file.buffer, tempAudioFilePath);
 
       // Suppression de l'ancien fichier audio dans AWS S3
       await deleteFromS3(album.urlAudio);
 
       // Upload du nouveau fichier audio dans AWS S3
-      const s3AudioUrl = await uploadToS3({
-        buffer: Buffer.from(require('fs').readFileSync(tempAudioFilePath)),
-        originalname: `${req.file.originalname}.m4a`,
-      });
+      const s3AudioUrl = await uploadAudioToS3(req.file.buffer, req.file.originalname);
 
       // Mise à jour de l'URL audio dans les données mises à jour
       updatedData.urlAudio = s3AudioUrl;
 
       // Suppression du fichier audio temporaire
-      require('fs').unlinkSync(tempAudioFilePath);
+      deleteTempFile(tempAudioFilePath);
     }
 
     // Mise à jour des autres données dans MongoDB
@@ -53,5 +42,30 @@ async function updateAlbum(req, res) {
   }
 }
 
-module.exports = updateAlbum;
+// Fonction utilitaire pour convertir en format .m4a
+async function convertToM4a(inputBuffer, outputFilePath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg()
+      .input(inputBuffer)
+      .audioCodec('aac')
+      .toFormat('m4a')
+      .on('end', resolve)
+      .on('error', reject)
+      .save(outputFilePath);
+  });
+}
 
+// Fonction utilitaire pour uploader l'audio vers AWS S3
+async function uploadAudioToS3(audioBuffer, originalname) {
+  return await uploadToS3({
+    buffer: Buffer.from(audioBuffer),
+    originalname: `${originalname}.m4a`,
+  });
+}
+
+// Fonction utilitaire pour supprimer le fichier temporaire
+function deleteTempFile(filePath) {
+  require('fs').unlinkSync(filePath);
+}
+
+module.exports = updateAlbum;

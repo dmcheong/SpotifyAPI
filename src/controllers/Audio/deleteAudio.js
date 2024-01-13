@@ -1,5 +1,4 @@
 const Audio = require('../../models/AudioModel');
-const Playlist = require('../../models/AlbumModel');
 const Artiste = require('../../models/ArtisteModel');
 const { deleteFromS3 } = require('../../config/aws-config');
 
@@ -24,11 +23,13 @@ async function deleteAudio(req, res, next) {
       }
     }
 
-    // Retirer l'audio des albums associés à l'artiste (s'il est associé à des albums)
-    const artist = await Artiste.findOne({ audios: audioId });
-    if (artist) {
-      artist.audios = artist.audios.filter(a => a.toString() !== audioId);
-      await artist.save();
+    // Retirer l'audio des artistes associés
+    for (const artistId of audio.artistes) {
+      const artist = await Artiste.findById(artistId);
+      if (artist) {
+        artist.audios = artist.audios.filter(a => a.toString() !== audioId);
+        await artist.save();
+      }
     }
 
     // Supprimer le fichier audio du bucket S3

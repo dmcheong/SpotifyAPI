@@ -12,26 +12,18 @@ async function updateArtiste(req, res) {
 
     // Si une couverture est mise à jour, assurez-vous de mettre à jour également dans AWS S3
     if (req.file) {
-      // Conversion en format image (à adapter selon vos besoins)
-      const tempCoverFilePath = `chemin-temporaire/cover-${req.file.originalname}.jpg`;
-
-      // (votre logique existante pour la conversion, l'upload, etc.)
-
-      // Suppression de l'ancienne couverture dans AWS S3 (si existante)
-      if (artiste.urlCover) {
-        await deleteFromS3(artiste.urlCover);
+      // Suppression de l'ancienne couverture dans AWS S3 (si elle existe)
+      if (artiste.cover_url) {
+        await deleteFromS3(artiste.cover_url);
       }
 
       // Upload de la nouvelle couverture dans AWS S3
       const s3CoverUrl = await uploadToS3({
-        buffer: Buffer.from(require('fs').readFileSync(tempCoverFilePath)),
-        originalname: `cover-${req.file.originalname}.jpg`,
+        buffer: req.file.buffer,
+        originalname: req.file.originalname,
       });
 
-      updatedData.urlCover = s3CoverUrl;
-
-      // Suppression du fichier de couverture temporaire
-      require('fs').unlinkSync(tempCoverFilePath);
+      updatedData.cover_url = s3CoverUrl;
     }
 
     // Mise à jour des données dans MongoDB

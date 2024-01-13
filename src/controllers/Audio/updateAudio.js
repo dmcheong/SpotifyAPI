@@ -15,23 +15,10 @@ async function updateAudio(req, res) {
       // Conversion en format image (à adapter selon vos besoins)
       const tempCoverFilePath = `chemin-temporaire/cover-${req.file.originalname}.jpg`;
 
-      // (votre logique existante pour la conversion, l'upload, etc.)
-
-      // Suppression de l'ancienne couverture dans AWS S3 (si existante)
-      if (audio.cover_url) {
-        await deleteFromS3(audio.cover_url);
-      }
-
-      // Upload de la nouvelle couverture dans AWS S3
-      const s3CoverUrl = await uploadToS3({
-        buffer: Buffer.from(require('fs').readFileSync(tempCoverFilePath)),
-        originalname: `cover-${req.file.originalname}.jpg`,
-      });
-
-      updatedData.cover_url = s3CoverUrl; // Correction du champ à mettre à jour
+      await processAndUploadCover(req.file.buffer, tempCoverFilePath, audio); // Utilisation d'une fonction utilitaire
 
       // Suppression du fichier de couverture temporaire
-      require('fs').unlinkSync(tempCoverFilePath);
+      deleteTempFile(tempCoverFilePath);
     }
 
     // Mise à jour des données dans MongoDB
@@ -45,5 +32,27 @@ async function updateAudio(req, res) {
   }
 }
 
-module.exports = updateAudio;
+// Fonction utilitaire pour traiter et télécharger la couverture vers AWS S3
+async function processAndUploadCover(coverBuffer, tempCoverFilePath, audio) {
+  // (votre logique existante pour la conversion, l'upload, etc.)
 
+  // Suppression de l'ancienne couverture dans AWS S3 (si existante)
+  if (audio.cover_url) {
+    await deleteFromS3(audio.cover_url);
+  }
+
+  // Upload de la nouvelle couverture dans AWS S3
+  const s3CoverUrl = await uploadToS3({
+    buffer: Buffer.from(coverBuffer),
+    originalname: `cover-${req.file.originalname}.jpg`,
+  });
+
+  audio.cover_url = s3CoverUrl; // Correction du champ à mettre à jour
+}
+
+// Fonction utilitaire pour supprimer le fichier temporaire
+function deleteTempFile(filePath) {
+  require('fs').unlinkSync(filePath);
+}
+
+module.exports = updateAudio;
