@@ -11,9 +11,8 @@ async function createArtiste(req, res, next) {
     // Enregistrement dans MongoDB avec l'URL de la couverture
     const savedArtiste = await Artiste.create({
       name: name,
-      artist: name,
       albums: [],
-      audio: [],
+      audios: [],
       // ... autres champs
     });
 

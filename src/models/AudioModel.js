@@ -1,17 +1,18 @@
 const mongoose = require('mongoose');
 
 const audioSchema = new mongoose.Schema({
+  urlAudio: String,
   title: String,
-  artistes: [{
+  artist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Artiste'
-  }],
-  albums: [{
+  },
+  cover_url: String,
+  album: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Album'
-  }],
+  },
   duration: String,
-  urlAudio: String,
   // Autres métadonnées audio
 });
 
