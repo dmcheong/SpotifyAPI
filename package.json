@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \" Erreur générale de test.\" && exit 1",
+    "start-redis": "redis-server",
     "start": "nodemon index.js",
     "testMongoDB": "node tests/testConnection.js",
     "testAWS": "mocha tests/testAWSConnection.js"

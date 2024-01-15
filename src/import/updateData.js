@@ -31,7 +31,6 @@ const Audio = mongoose.model('Audio', new mongoose.Schema({
   }],
   duration: String,
   urlAudio: String,
-  // Autres métadonnées audio
 }));
 
 const Artiste = mongoose.model('Artiste', new mongoose.Schema({
@@ -45,16 +44,13 @@ const Artiste = mongoose.model('Artiste', new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Album'
     }
-    // ... d'autres albums
   ],
   audios: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Audio'
     }
-    // ... d'autres pistes audio
   ],
-  // Autres métadonnées artiste
 }));
 
 const Album = mongoose.model('Album', new mongoose.Schema({
@@ -70,7 +66,6 @@ const Album = mongoose.model('Album', new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Audio'
     }
-    // ... d'autres pistes
   ]
 }));
 
@@ -143,7 +138,6 @@ async function insertData(localFiles) {
           cover_url: metadata.artistCoverURL,
           albums: [],
           audios: [],
-          // ... d'autres champs d'artiste à partir des métadonnées
         });
         await artiste.save();
       }
@@ -156,7 +150,6 @@ async function insertData(localFiles) {
           artistes: [artiste._id],
           cover_url: metadata.cover,
           audios: [],
-          // ... d'autres champs d'album à partir des métadonnées
         });
         await album.save();
       }

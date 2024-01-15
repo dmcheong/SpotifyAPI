@@ -6,21 +6,16 @@ const artisteSchema = new mongoose.Schema({
   last_name: String,
   full_name: String,
   cover_url: String,
-  albums: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Album'
-    }
-    // ... d'autres albums
-  ],
-  audios: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Audio'
-    }
-    // ... d'autres pistes audio
-  ],
-  // Autres métadonnées artiste
+  albums: 
+  [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Album'
+  }],
+  audios: 
+  [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Audio'
+  }],
 });
 
 const Artiste = mongoose.model('Artiste', artisteSchema);

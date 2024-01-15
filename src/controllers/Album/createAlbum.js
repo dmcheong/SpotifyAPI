@@ -22,7 +22,6 @@ async function createAlbum(req, res, next) {
       title: title,
       artistes: [artiste._id],
       date_sortie: req.body.date_sortie || '',
-      // ... autres champs
     });
 
     // Ajouter la couverture si elle est présente dans la requête

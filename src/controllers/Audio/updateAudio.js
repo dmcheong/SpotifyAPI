@@ -34,7 +34,6 @@ async function updateAudio(req, res) {
 
 // Fonction utilitaire pour traiter et télécharger la couverture vers AWS S3
 async function processAndUploadCover(coverBuffer, tempCoverFilePath, audio) {
-  // (votre logique existante pour la conversion, l'upload, etc.)
 
   // Suppression de l'ancienne couverture dans AWS S3 (si existante)
   if (audio.cover_url) {

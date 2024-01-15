@@ -13,7 +13,6 @@ async function createArtiste(req, res, next) {
       name: name,
       albums: [],
       audios: [],
-      // ... autres champs
     });
 
     res.status(201).json(savedArtiste);

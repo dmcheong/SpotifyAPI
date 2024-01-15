@@ -39,7 +39,6 @@ const Audio = mongoose.model('Audio', new mongoose.Schema({
   album: {
     type: String,
   },
-  // Autres métadonnées audio
 }));
 
 // Modèle MongoDB pour les données d'artiste
@@ -48,7 +47,6 @@ const Artiste = mongoose.model('Artiste', new mongoose.Schema({
   name: String,
   albums: [String],
   audio: [String],
-  // Autres métadonnées artiste
 }));
 
 // Modèle MongoDB pour les données d'album
@@ -62,9 +60,7 @@ const Album = mongoose.model('Album', new mongoose.Schema({
       track_id: String,
       title: String,
       duration: String,
-      // Autres métadonnées de piste
     }
-    // ... d'autres pistes
   ]
 }));
 
@@ -209,5 +205,3 @@ async function importLocalFiles() {
 
 // Exécute la fonction d'importation
 importLocalFiles();
-
-// ...

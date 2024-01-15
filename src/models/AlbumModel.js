@@ -8,13 +8,10 @@ const albumSchema = new mongoose.Schema({
   }],
   date_sortie: String,
   cover_url: String,
-  audios: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Audio'
-    }
-    // ... d'autres pistes
-  ]
+  audios: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Audio'
+  }]
 });
 
 const Album = mongoose.model('Album', albumSchema);

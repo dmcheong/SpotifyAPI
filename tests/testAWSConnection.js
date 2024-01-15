@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const s3 = require('../src/config/aws-config'); // Assurez-vous que le chemin est correct
+const s3 = require('../src/config/aws-config');
 
 describe('AWS Connection Test', () => {
   it('Ceci est un test. Lire le message précédent pour vérifier le test de connection à AWS', (done) => {
