@@ -18,7 +18,6 @@ const mongoose = require('./src/config/mongodb-config');
 const s3 = require('./src/config/aws-config');
 
 // Middleware pour analyser les requêtes JSON
-app.use(bodyParser.urlencoded({ extend: true }));
 app.use(bodyParser.json());
 app.use(cors());
 

@@ -1,6 +1,4 @@
 const Artiste = require('../../models/ArtisteModel');
-const multer = require('multer');
-const upload = multer();
 
 async function createArtiste(req, res, next) {
   try {
@@ -27,4 +25,4 @@ async function createArtiste(req, res, next) {
   }
 }
 
-module.exports = upload.none(), createArtiste;
+module.exports = createArtiste;
