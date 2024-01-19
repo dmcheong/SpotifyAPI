@@ -1,5 +1,5 @@
 const Audio = require('../../models/AudioModel');
-const { uploadToS3 } = require('../../config/aws-config');
+const { uploadToS3 } = require('../../import/uploadS3');
 const mm = require('music-metadata');
 const createArtiste = require('../../controllers/Artiste/createArtiste');
 
@@ -40,6 +40,7 @@ const processAndUploadAudio = async (audioBuffer, tempAudioFilePath, name) => {
     console.log('Avant la création de l\'objet Audio');
     const newAudio = new Audio({
       title: title,
+      artist: artist,
       artist: savedArtiste._id,
       albums: [],
       duration: duration,
@@ -81,6 +82,8 @@ const processAndUploadAudio = async (audioBuffer, tempAudioFilePath, name) => {
 
 const createAudio = async (req, res) => {
   try {
+    console.log(req.file,'121test');
+    console.log(req.body,'name');
     let audioBuffer;
     let tempAudioFilePath;
 
@@ -96,7 +99,7 @@ const createAudio = async (req, res) => {
 
     const savedAudio = await processAndUploadAudio(audioBuffer, tempAudioFilePath, req.body.name);
 
-    res.status(201).json(savedAudio);
+    res.status(201).json('');
   } catch (error) {
     console.error('Erreur lors de la création de l\'audio : ', error);
 

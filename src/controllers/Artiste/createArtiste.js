@@ -1,7 +1,12 @@
 const Artiste = require('../../models/ArtisteModel');
+const multer = require('multer');
+const upload = multer();
 
 async function createArtiste(req, res, next) {
   try {
+    // Affiche les données du formulaire
+    console.log(req.body);
+
     // Validation des données d'entrée
     const { name } = req.body;
     if (!name) {
@@ -22,4 +27,4 @@ async function createArtiste(req, res, next) {
   }
 }
 
-module.exports = createArtiste;
+module.exports = upload.none(), createArtiste;

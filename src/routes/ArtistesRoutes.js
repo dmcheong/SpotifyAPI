@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const upload = multer();
 
 // Importation des contrôleurs pour les artistes
 const getAllArtistes = require('../controllers/Artiste/getAllArtistes');
@@ -11,7 +13,7 @@ const deleteArtiste = require('../controllers/Artiste/deleteArtiste');
 // Routes pour les artistes
 router.get('/', getAllArtistes);
 router.get('/:id', getArtisteById);
-router.post('/', createArtiste);
+router.post('/', upload.none(), createArtiste);
 router.put('/:id', updateArtiste);
 router.delete('/:id', deleteArtiste);
 
