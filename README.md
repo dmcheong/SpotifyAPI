@@ -23,6 +23,11 @@ UN LIEN YOUTUBE S'IL VOUS PLAÎT, METTEZ-LA EN PRIVÉ
 Demande 1 :
 Demande 2 :
 Demande 3 :
+https://youtu.be/sxZJBnAyyg4
+https://youtu.be/q52IAsPvAV4
+https://youtu.be/m_Hrr1JiIIw
+https://youtu.be/ztl6g7cv3zY
+https://youtu.be/Ea0gDa7FqYM
 SOUHAITEZ-VOUS UNE ANALYSE ET DES RETOURS CONCRETS SUR VOTRE CODE ?
 Dites oui si vous vous en souciez.
 
